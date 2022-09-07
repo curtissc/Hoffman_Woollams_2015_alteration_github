@@ -1,0 +1,50 @@
+# SemD model final version
+cd C:/Work/lens/Models/semd
+source outputwrite.in
+
+deleteNet *
+deleteEx *
+
+addNet semd -i 7 -t 4 CONTINUOUS   
+# 7 intervals per trial, each comprising 4 ticks
+
+addGroup orth 25 INPUT IN_INTEGR LOGISTIC HARD_CLAMP 
+addGroup hid 25 LOGISTIC
+addGroup sem 50 OUTPUT LOGISTIC
+
+# IN_INTEGR means that inputs accumulate gradually over time
+# if this isn't selected, the default OUT_INTEGR applies instead,
+# which means that hard-clamped units take time to come on
+
+connectGroups orth hid sem
+connectGroups hid hid
+
+setObj randRange 1
+
+#set initial outputs to zero
+foreach group {hid sem} { setObj $group.initOutput 0 }
+
+#fix bias at -5, untrainable
+setLinkValues randMean -5 -t "bias"
+setLinkValues randRange 0 -t "bias"
+resetNet
+freezeWeights -t "bias"
+
+resetPlot
+setObj unitCellSize 24
+autoPlot 25
+
+setObj learningRate 0.2
+setObj momentum 0.9
+setObj weightDecay 0.000001
+setObj numUpdates 1000
+setObj reportInterval 50
+setObj criterion 0
+setObj noiseRange 1
+setObj batchSize 96
+setObj clampStrength 0.5
+setObj targetRadius 0
+
+train -a doug -s
+
+loadExamples finalreps.ex -m REPLACE -e PERM

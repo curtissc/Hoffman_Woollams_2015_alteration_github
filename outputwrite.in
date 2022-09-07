@@ -1,0 +1,62 @@
+# Procedures to write the final tick for each example
+# first defines the format of writing the unit activations
+
+proc printStuff {group unit} {
+            format "%.5f\t" [getObj $unit.output]
+          }
+
+#second does the writing for each example sequentially
+# if del==1 delete existing file (default); otherwise append
+proc writeout {file {del {1}}} {
+
+# delete existing file
+if $del==1 {file delete $file}
+
+set numex [getObj testingSet.numExamples]
+
+for {set ex 0} {$ex<$numex} {incr ex} {
+
+doExample $ex -test
+
+printUnitValues $file printStuff {sem} -a
+
+set chan [open $file a]
+puts $chan e
+close $chan
+
+}
+}
+
+#to write outputs on each tick to a file
+
+#first a sub-proc to run on each tick
+proc tickwrite {layer} {
+global file2
+
+printUnitValues $file2 printStuff $layer -a
+
+set chan [open $file2 a]
+puts $chan e
+close $chan
+}
+
+proc timewrite {layer file numex {del {1}}} {
+
+# delete existing file
+if $del==1 {file delete $file}
+
+global file2
+set file2 $file
+
+setObj postTickProc "tickwrite $layer"
+
+#set numex [getObj testingSet.numExamples]
+
+for {set ex 0} {$ex<$numex} {incr ex} {
+
+doExample $ex -test
+
+}
+
+setObj postTickProc ""
+}

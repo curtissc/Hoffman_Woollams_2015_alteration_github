@@ -1,20 +1,8 @@
-setwd("D:/Box Sync/Rice/Projects/Dissertation Frequency project/Hoffman & Woollams 2015 model")
 
-
-
-# original H&W Model
-      p <- "C:/cygwin/home/Curtiss Chapman/Lens/Models/Hoffman & Woollams 2015/out/"
-      out.lists <- list.files(p, pattern=".out$")
 # H&W Model with frequencies
       p <- "C:/cygwin/home/Curtiss Chapman/Lens/Models/Hoffman & Woollams 2015/H_W_freqs/out/"
       out.lists <- list.files(p, pattern=".out$")
       orig.reps.avg <- read.csv("D:/Box Sync/Rice/Projects/Dissertation Frequency project/Hoffman & Woollams 2015 model/Average representations (orig & freq).csv", header=F)
-# 0.05 low 0.25 high model with frequencies
-      p <- "C:/cygwin/home/Curtiss Chapman/Lens/Models/Hoffman & Woollams 2015/H_W_freqs_05_low_25_high/out/"
-      out.lists <- list.files(p, pattern=".out$")
-# 0.15 low 0.30 high model with frequencies
-      p <- "C:/cygwin/home/Curtiss Chapman/Lens/Models/Hoffman & Woollams 2015/H_W_freqs_15_low_30_high/out/"
-      out.lists <- list.files(p, pattern=".out$")
 
 # evaluate model representations
       out.dfs <- vector('list', length(out.lists))
@@ -139,7 +127,10 @@ setwd("D:/Box Sync/Rice/Projects/Dissertation Frequency project/Hoffman & Woolla
                   
                   mean.act.summary.freq.2 <- cbind.data.frame(Freq=rep(c(rep("HF", 10), rep('LF', 10)), 2), SemD=rep(c('HD', 'LD'), each=20),
                                                               mean.act=c(mean.act.summary.freq[,1], mean.act.summary.freq[,2], mean.act.summary.freq[,3], mean.act.summary.freq[,4]))
+                  mean.act.summary.freq.2$Freq <- factor(mean.act.summary.freq.2$Freq, levels=c("LF", "HF"))
+                  mean.act.summary.freq.2$SemD <- factor(mean.act.summary.freq.2$SemD, levels=c("LD", "HD"))
                   
+                  write.csv(mean.act.summary.freq.2, "")
                   
                   # analysis across models
                   
@@ -149,8 +140,8 @@ setwd("D:/Box Sync/Rice/Projects/Dissertation Frequency project/Hoffman & Woolla
                         colMeans(mean.act.summary.freq)
                         boxplot(mean.act.summary.freq)
                         ggplot(mean.act.summary.freq.2, aes(x=Freq, y=mean.act, color=SemD)) +
-                          geom_boxplot() +
-                          labs(list(x="Frequency", y = "mean activation"))
+                          geom_boxplot() + xlab("Frequency") + ylab("Mean Activation")
+                          #labs(list(x="Frequency", y = "mean activation"))
                   
                           library(car)
                           SemD <- factor(c(rep("HD",2), rep("LD", 2)))
